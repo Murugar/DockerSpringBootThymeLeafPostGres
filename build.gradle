@@ -8,10 +8,9 @@ buildscript {
 }
 
 apply plugin: 'java'
-apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'checkstyle'
-apply plugin: 'pmd'
+//apply plugin: 'checkstyle'
+//apply plugin: 'pmd'
 
 jar {
     baseName = 'springbootthymepostgresdocker'
@@ -40,42 +39,3 @@ dependencies {
     testCompile("com.jayway.jsonpath:json-path-assert:+")
 }
 
-/* Code style checks */
-
-check.dependsOn 'checkstyle', 'pmd'
-
-checkstyle {
-  configFile rootProject.file('conf/checkstyle-config.xml')
-  ignoreFailures true
-  showViolations false
-  toolVersion = '6.10.1'
-}
-
-task checkstyle(type: Checkstyle) {
-  classpath = files()
-  include '**/*.java','**/*.properties','**/*.xml'
-  exclude '**/build/**'
-  source 'src'
-}
-
-pmd {
-  consoleOutput true
-  ignoreFailures false
-  toolVersion '5.5.1'
-}
-
-task pmdSrc(type: Pmd) {
-  include '**/*.java'
-  exclude '**/build/**'
-  ruleSetFiles = rootProject.files('conf/pmd-base-ruleset.xml', 'conf/pmd-src-ruleset.xml')
-  source 'src/main'
-}
-
-task pmdTestSrc(type: Pmd) {
-  include '**/*.java'
-  exclude '**/build/**'
-  ruleSetFiles = rootProject.files('conf/pmd-base-ruleset.xml', 'conf/pmd-test-ruleset.xml')
-  source 'src/test'
-}
-
-task pmd(dependsOn: ['pmdSrc', 'pmdTestSrc'])
