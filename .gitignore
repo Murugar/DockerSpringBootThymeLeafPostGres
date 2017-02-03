@@ -1,0 +1,11 @@
+
+# IntelliJ
+.idea/
+*.iws
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# Gradle
+.gradle
+build/

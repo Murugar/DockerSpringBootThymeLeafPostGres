@@ -1,0 +1,153 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Docker - Spring Boot - ThymeLead - Postgres</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous"/>
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+          crossorigin="anonymous"/>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <h2 class="muted">Docker/ Spring Boot / ThymeLeaf / Bootstrap / JQuery / PostGres </h2>
+</div>
+
+
+<div class="container">
+	<div>
+		<div th:if="${#lists.size(people) > 0}">
+			<h2 class="muted">Library Subscribers</h2>
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>Name</th>
+						<th>Email</th>
+						<th>Phone</th>
+						<th>Created</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr
+						th:each="person : ${people}">
+                <td th:text="${person.id}"></td>
+                <td th:text="${person.name}"></td>
+                <td th:text="${person.email}"></td>
+                <td th:text="${person.phone}"></td>
+                <td th:text="${person.created}"></td>
+                <td>
+                  <button type="button" data-toggle="modal" data-target="#myModal"
+                        th:attr="data-personname=${person.name}, data-personid=${person.id}" 
+                    >     
+						Book Loans
+						</button>
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="control-group">
+		<h2 class="muted">Add Member</h2>
+		<form name="employee" action="free/addperson" method="post">
+			<div class="control-group">
+				<label class="control-label" for="name">Name</label>
+			</div>
+			<div class="controls">
+				<input type="text" name="name"/>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="email">Email</label>
+			</div>
+			<div class="controls">
+				<input type="text" name="email"/>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="phone">Phone</label>
+			</div>
+			<div class="controls">
+				<input type="text" name="phone"/>
+			</div>
+			<div class="controls">
+				<input type="submit" class="btn btn-primary"/>
+			</div>
+		</form>
+	</div>
+</div>
+
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">Books</h4>
+			</div>
+			<div class="modal-body">
+				<table class="table table-bordered table-striped">
+					<thead>
+						<tr>
+							<th>Id</th>
+							<th>Title</th>
+							<th>Author</th>
+							<th>ISBN</th>
+						</tr>
+					</thead>
+					<tbody id="book-loans"></tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+$('#myModal').on('show.bs.modal', function(event) {
+  // Button that triggered the modal
+  var button = $(event.relatedTarget);
+  // Extract info from data-* attributes
+  var id = button.data('personid')
+  var name = button.data('personname');
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  var modal = $(this)
+  modal.find('.modal-title').text('Books Loaned by ' + name);
+
+  // ajax call to get book loans
+  var url = '/loan/person/' + id + '/books';
+  $.getJSON(url, function(data) {
+    var items = [];
+    $.each(data, function(index, element) {
+      items.push('<tr><td>' + element.id + '</td>'
+        + '<td>' + element.title + '</td>'
+        + '<td>' + element.author + '</td>'
+        + '<td>' + element.isbn + '</td></tr>');
+    });
+    $("#book-loans").html(items.join(""));
+  });
+})
+</script>
+</body>
+</html>
